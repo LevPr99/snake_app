@@ -16,11 +16,8 @@
 # t1.start()
 # t2.start()
 # t1.join(timeout=5.0)
+def print_to_console1(text, **kwargs):
+    if 'sep' in kwargs and 'text' in kwargs:
+        print(kwargs['text'], kwargs['sep'])
 
-body_coords = [(0,0), (0,1), (0,2)]
-
-for xy in range(len(body_coords)): # from 0 to 3 - 1
-    # print(body_coords[xy])
-    for j in body_coords[xy]:
-        print(j)
-    print()
+print_to_console1(text='123', sep='\n\n\n')

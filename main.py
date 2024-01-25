@@ -1,72 +1,97 @@
-# from time import sleep
+from time import sleep
+from typing import Dict
+from random import randint
+import os
+import platform
 
 
-def move(head, body_coords, vector):
+def cooking_meal(x: int, y: int):
+    fruit = {'x': randint(0, x - 1), 'y': randint(0, y - 1)}
+    return fruit
+
+def eat(fruit, body_coords):
+    if body_coords[0]['x'] == fruit['x'] and body_coords[0]['y'] == fruit['y']:
+        pass #TODO
+
+def move(body_coords: list[Dict], vector: str):
     '''
-    head - head coords;
-    body_coords;
-    vector - direction of our move.
+    body_coords - coords of body and head (body_coords[0]);
+    vector - direction of move.
     
     Function for change body and head position.
     '''
-    if len(body_coords) > 0:
-        if vector == 'down':
-            for indx in range(len(body_coords)):
-                for _ in body_coords[indx]:
-                    body_coords[indx][1] += 1
-                    head[indx][1] += 1
-        elif vector == "right":
-            for indx in range(len(body_coords)):
-                for _ in body_coords[indx]:
-                    body_coords[indx][0] += 1
-                    head[indx][0] += 1
-        elif vector == "left":
-            for indx in range(len(body_coords)):
-                for _ in body_coords[indx]:
-                    body_coords[indx][0] -= 1
-                    head[indx][1] -= 1
-        elif vector == "up":
-            for indx in range(len(body_coords)):
-                for _ in body_coords[indx]:
-                    body_coords[indx][0] -= 1
-                    head[indx][0] -= 1
+    if vector == 'down':
+        body_coords[0]['y'] += 1
+    elif vector == 'up':
+        body_coords[0]['y'] -= 1
+    elif vector == 'right':
+        body_coords[0]['x'] += 1
+    elif vector == 'left':
+        body_coords[0]['x'] -= 1
+    else:
+        pass
+    
+def check_symbols(head_symbol: str, field_symbol: str, error_text='Невидимая змейка'):
+    if field_symbol == head_symbol:
+        raise ValueError(error_text)
 
+def body_raise(body_coords: list[Dict]):
+    body_coords.append(body_coords[0])
 
-# def change_coords(**kwargs):
-#     for indx in range(len(body_coords)):
-#             for _ in body_coords[indx]:
-#                 body_coords[indx][1] += 1
-#                 head[indx][1] += 1
-                
-# change_coords(actions[0])
-
-
-
-def print_field(head_coord: list, body_coord: list, field_size=10, head_symbol='%', field_symbol='#'):
+def create_field(body_coords: list[Dict],
+                 fruit: dict[str: int],
+                 X: int, Y: int,
+                 head_symbol='%',
+                 field_symbol='+'):
     '''
     Function for print game field.
     '''
+    check_symbols(head_symbol, field_symbol)
     
-    if head_symbol == field_symbol:
-        raise ValueError('Невидимая змейка')
-        
     ground = list()
-    for x in range(field_size):
+    for x in range(X):
         tmp = list()
-        for y in range(10):
-            if x == head_coord[0] and y == head_coord[1]:
-                tmp.append('%')
-            else:
+        for y in range(Y):
+            if x == body_coords[0]['x'] and y == body_coords[0]['y']:
+                tmp.append(head_symbol)
+            elif x == fruit['x'] and y == fruit['y']:
+                tmp.append('@')
+            elif body_coords[0]['x'] == fruit['x'] and body_coords[0]['y'] == fruit['y']:
+                body_raise()
                 tmp.append('#')
+            else:
+                tmp.append(field_symbol)
         ground.append(tmp)
-    
-    print(*ground, sep='\n')
-    print()
+    return ground
 
+def clear():
+    platf = platform.system()
+    if platf == 'Windows':
+        os.system('cls')
+    elif platf == 'Linux':
+        os.system('clear')
+        
+def print_field(field):
+    for i in field:
+        print(*i)
 
+BODY_COORDS = [{'x': 5, 'y': 5}]
 VECTOR = 'right'
-HEAD_COORDS = (5, 5)
-BODY_COORDS = []
+X = 15
+Y = 15
+
+def run(game_speed: float):
+    FRUIT = cooking_meal(x=X, y=Y)
+    while BODY_COORDS[0]['x'] < X and BODY_COORDS[0]['y'] < Y:
+        clear()
+        if BODY_COORDS[0]['x'] == FRUIT['x'] and BODY_COORDS[0]['y'] == FRUIT['y']:
+            FRUIT = cooking_meal(X, Y)
+        FIELD = create_field(body_coords=BODY_COORDS, X=X, Y=Y, fruit=FRUIT)
+        move(BODY_COORDS, VECTOR)
+        print_field(FIELD)
+        sleep(game_speed)
+    print('You lose this game!')
 
 
-print_field((1, 0), head_symbol='@', field_symbol='@')
+    # print(BODY_COORDS[0]['x'] < X)
+run(0.2)
