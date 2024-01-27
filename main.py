@@ -13,23 +13,27 @@ def eat(fruit, body_coords):
     if body_coords[0]['x'] == fruit['x'] and body_coords[0]['y'] == fruit['y']:
         pass #TODO
 
-def move(body_coords: list[Dict], vector: str):
-    '''
-    body_coords - coords of body and head (body_coords[0]);
-    vector - direction of move.
-    
-    Function for change body and head position.
-    '''
-    if vector == 'down':
-        body_coords[0]['y'] += 1
-    elif vector == 'up':
-        body_coords[0]['y'] -= 1
-    elif vector == 'right':
-        body_coords[0]['x'] += 1
-    elif vector == 'left':
-        body_coords[0]['x'] -= 1
-    else:
-        pass
+def move(body_coords: list[tuple], vector: str):
+  '''
+  body_coords - coords of body and head (body_coords[0]);
+  vector - direction of move.
+
+  Function for change body and head position.
+  '''
+  if vector == 'down':
+    body_coords.insert(0, (body_coords[0][0], body_coords[0][1] + 1))
+    body_coords.pop()
+  elif vector == 'up':
+    body_coords.insert(0, (body_coords[0][0], body_coords[0][1] - 1))
+    body_coords.pop()
+  elif vector == 'right':
+    body_coords.insert(0, (body_coords[0][0], body_coords[0][0] + 1))
+    body_coords.pop()
+  elif vector == 'left':
+    body_coords.insert(0, (body_coords[0][0], body_coords[0][0] - 1))
+    body_coords.pop()
+  return body_coords
+print('hello')
     
 def check_symbols(head_symbol: str, field_symbol: str, error_text='Невидимая змейка'):
     if field_symbol == head_symbol:
