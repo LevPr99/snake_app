@@ -27,10 +27,10 @@ def move(body_coords: list[tuple], vector: str):
     body_coords.insert(0, (body_coords[0][0], body_coords[0][1] - 1))
     body_coords.pop()
   elif vector == 'right':
-    body_coords.insert(0, (body_coords[0][0], body_coords[0][0] + 1))
+    body_coords.insert(0, (body_coords[0][0] + 1, body_coords[0][1]))
     body_coords.pop()
   elif vector == 'left':
-    body_coords.insert(0, (body_coords[0][0], body_coords[0][0] - 1))
+    body_coords.insert(0, (body_coords[0][0] - 1, body_coords[0][1]))
     body_coords.pop()
   return body_coords
 print('hello')
