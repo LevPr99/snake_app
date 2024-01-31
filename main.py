@@ -1,17 +1,27 @@
 from time import sleep
-from typing import Dict
 from random import randint
 import os
 import platform
+from enum import Enum
+from art import tprint
+import keyboard
 
 
-def cooking_meal(x: int, y: int):
-    fruit = {'x': randint(0, x - 1), 'y': randint(0, y - 1)}
+def cooking_meal(x: int, y: int) -> tuple:
+    """Function for change fruit coord.
+
+    Args:
+        x (int): Coord x for fruit position
+        y (int): Coord y for fruit position
+
+    Returns:
+        tuple: New tuple with coords of fruit
+    """
+    fruit = (randint(0, x - 1), randint(0, y - 1))
     return fruit
 
-def eat(fruit, body_coords):
-    if body_coords[0]['x'] == fruit['x'] and body_coords[0]['y'] == fruit['y']:
-        pass #TODO
+def eat(fruit):
+    pass  #TODO
 
 def move(body_coords: list[tuple], vector: str):
   '''
@@ -39,29 +49,26 @@ def check_symbols(head_symbol: str, field_symbol: str, error_text='Невиди�
     if field_symbol == head_symbol:
         raise ValueError(error_text)
 
-def body_raise(body_coords: list[Dict]):
-    body_coords.append(body_coords[0])
+# def body_raise(body_coords: list[tuple]):
+#   body_coords.append(body_coords[0])
 
-def create_field(body_coords: list[Dict],
-                 fruit: dict[str: int],
-                 X: int, Y: int,
-                 head_symbol='%',
-                 field_symbol='+'):
+def create_field(body_coords: list[tuple], fruit: tuple, 
+                 X: int, Y: int, head_symbol='%', field_symbol=' '):
     '''
     Function for print game field.
     '''
     check_symbols(head_symbol, field_symbol)
-    
+
     ground = list()
-    for x in range(X):
+    for y in range(Y):
         tmp = list()
-        for y in range(Y):
-            if x == body_coords[0]['x'] and y == body_coords[0]['y']:
+        for x in range(X):
+            if x == body_coords[0][0] and y == body_coords[0][1]:
                 tmp.append(head_symbol)
-            elif x == fruit['x'] and y == fruit['y']:
+            elif x == fruit[0] and y == fruit[1]:
                 tmp.append('@')
-            elif body_coords[0]['x'] == fruit['x'] and body_coords[0]['y'] == fruit['y']:
-                body_raise()
+            elif body_coords[0][0] == fruit[0] and body_coords[0][1] == fruit[1]:
+                eat(fruit)
                 tmp.append('#')
             else:
                 tmp.append(field_symbol)
@@ -69,6 +76,9 @@ def create_field(body_coords: list[Dict],
     return ground
 
 def clear():
+    """Function for clear console. If os == Windows, call command 'cls'.
+    if os == Linux, call 'clear'
+    """
     platf = platform.system()
     if platf == 'Windows':
         os.system('cls')
@@ -76,26 +86,38 @@ def clear():
         os.system('clear')
         
 def print_field(field):
+    out_s = ''
     for i in field:
-        print(*i)
+        out_s += ''.join(i).ljust(10) + '\n'
+    print(out_s)
+    
+class Difficult(Enum):
+    
+    Easy = 1.1
+    Medium = 0.5
+    Hard = 0.2
 
-BODY_COORDS = [{'x': 5, 'y': 5}]
+def game_over():
+    tprint('You Lose!', font='rnd-xlarge')
+
+
+BODY_COORDS = [(4, 6)]
 VECTOR = 'right'
 X = 15
 Y = 15
 
-def run(game_speed: float):
+def run(game_speed: Difficult):
     FRUIT = cooking_meal(x=X, y=Y)
-    while BODY_COORDS[0]['x'] < X and BODY_COORDS[0]['y'] < Y:
+    while 0 <= BODY_COORDS[0][0] < X and 0 <= BODY_COORDS[0][1] < Y:
         clear()
-        if BODY_COORDS[0]['x'] == FRUIT['x'] and BODY_COORDS[0]['y'] == FRUIT['y']:
+        if BODY_COORDS[0][0] == FRUIT[0] and BODY_COORDS[0][1] == FRUIT[1]:
             FRUIT = cooking_meal(X, Y)
-        FIELD = create_field(body_coords=BODY_COORDS, X=X, Y=Y, fruit=FRUIT)
+        FIELD = create_field(body_coords=BODY_COORDS, X=X, Y=Y, fruit=FRUIT, field_symbol='*')
         move(BODY_COORDS, VECTOR)
         print_field(FIELD)
         sleep(game_speed)
-    print('You lose this game!')
+    clear()
+    game_over()
 
 
-    # print(BODY_COORDS[0]['x'] < X)
-run(0.2)
+# run(Difficult.Hard.value)

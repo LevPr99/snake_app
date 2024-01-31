@@ -1,14 +1,12 @@
-from random import random
+import keyboard
+from main import clear
 
-body_coords = [(0,1)]
 
-
-def eat(meal_coords):
-    if body_coords[0] == meal_coords:
-        body_coords.append(meal_coords)
-        return random.random()
-    else:
-        return meal_coords
-    
-def move():
-    pass
+while True:
+    event = keyboard.read_event()
+    if event.event_type == keyboard.KEY_DOWN:
+        key = event.name
+        clear()
+        print(f'Pressed: {key}')
+        if key == 'q':
+            break
