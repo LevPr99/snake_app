@@ -1,12 +1,8 @@
-import keyboard
-from main import clear
+def eat(body_coords: list[tuple], fruit):
+    return (body_coords[0][0], body_coords[0][1] + len(body_coords), )
 
-
-while True:
-    event = keyboard.read_event()
-    if event.event_type == keyboard.KEY_DOWN:
-        key = event.name
-        clear()
-        print(f'Pressed: {key}')
-        if key == 'q':
-            break
+body = [(0, 1)]
+body.append(eat(body, (0, 1)))
+body.append(eat(body, (0, 1)))
+body.append(eat(body, (0, 1)))
+print(body)
